@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuzzy Engine - Interactive Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a25;
+      --accent-cyan: #00f5d4;
+      --accent-purple: #9b5de5;
+      --accent-pink: #f15bb5;
+      --accent-yellow: #fee440;
+      --accent-orange: #ff6b35;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --text-muted: #606070;
+      --border: rgba(255, 255, 255, 0.08);
+      --glow-cyan: 0 0 40px rgba(0, 245, 212, 0.3);
+      --glow-purple: 0 0 40px rgba(155, 93, 229, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    .bg-gradient {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(155, 93, 229, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(0, 245, 212, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(241, 91, 181, 0.05) 0%, transparent 70%);
+      z-index: -1;
+      animation: gradientShift 20s ease-in-out infinite;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Grid pattern overlay */
+    .grid-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 4rem 0 3rem;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: var(--glow-cyan);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Main content grid */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .demo-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-title .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .card-title .icon.cyan { background: rgba(0, 245, 212, 0.15); }
+    .card-title .icon.purple { background: rgba(155, 93, 229, 0.15); }
+    .card-title .icon.pink { background: rgba(241, 91, 181, 0.15); }
+
+    /* Input controls */
+    .input-group {
+      margin-bottom: 2rem;
+    }
+
+    .input-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .input-label span {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .input-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .slider-container {
+      position: relative;
+      height: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .slider-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 6px;
+      transition: width 0.1s ease;
+    }
+
+    input[type="range"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* Output display */
+    .output-display {
+      text-align: center;
+      padding: 2rem;
+      background: var(--bg-tertiary);
+      border-radius: 16px;
+      margin-top: 1rem;
+    }
+
+    .output-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .output-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .output-unit {
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      margin-left: 0.25rem;
+    }
+
+    /* Membership visualization */
+    .chart-container {
+      height: 250px;
+      position: relative;
+      margin-top: 1rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* Membership values */
+    .membership-values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .membership-item {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .membership-item .label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .membership-item .value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .membership-item .bar {
+      height: 4px;
+      background: var(--bg-primary);
+      border-radius: 2px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+    }
+
+    .membership-item .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.2s ease;
+    }
+
+    /* Code block */
+    .code-block {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 1.5rem;
+    }
+
+    .code-block .comment { color: var(--text-muted); }
+    .code-block .keyword { color: var(--accent-purple); }
+    .code-block .string { color: var(--accent-cyan); }
+    .code-block .number { color: var(--accent-yellow); }
+    .code-block .function { color: var(--accent-pink); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-gradient"></div>
+  <div class="grid-pattern"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🌫️</div>
+        <h1>Fuzzy Engine</h1>
+      </div>
+      <p class="tagline">Interactive Fuzzy Logic Demonstration</p>
+    </header>
+
+    <div class="demo-grid">
+      <div class="controls-section">
+        <div class="card">
+          <h2 class="card-title">
+            <span class="icon cyan">🎛️</span>
+            Input Variables
+          </h2>
+
+          <div class="input-group">
+            <div class="input-label">
+              <span>Temperature</span>
+              <span class="input-value" id="temp-value">25°C</span>
+            </div>
+            <div class="slider-container">
+              <div class="slider-fill" id="temp-fill" style="width: 25%"></div>
+              <input type="range" id="temperature" min="0" max="100" value="25">
+            </div>
+            <div class="membership-values">
+              <div class="membership-item">
+                <div class="label">Cold</div>
+                <div class="value" id="cold-value">0.75</div>
+                <div class="bar"><div class="bar-fill" id="cold-bar" style="width: 75%; background: #00f5d4;"></div></div>
+              </div>
+              <div class="membership-item">
+                <div class="label">Warm</div>
+                <div class="value" id="warm-value">0.00</div>
+                <div class="bar"><div class="bar-fill" id="warm-bar" style="width: 0%; background: #fee440;"></div></div>
+              </div>
+              <div class="membership-item">
+                <div class="label">Hot</div>
+                <div class="value" id="hot-value">0.00</div>
+                <div class="bar"><div class="bar-fill" id="hot-bar" style="width: 0%; background: #f15bb5;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label">
+              <span>Humidity</span>
+              <span class="input-value" id="humidity-value">50%</span>
+            </div>
+            <div class="slider-container">
+              <div class="slider-fill" id="humidity-fill" style="width: 50%"></div>
+              <input type="range" id="humidity" min="0" max="100" value="50">
+            </div>
+            <div class="membership-values">
+              <div class="membership-item">
+                <div class="label">Dry</div>
+                <div class="value" id="dry-value">0.00</div>
+                <div class="bar"><div class="bar-fill" id="dry-bar" style="width: 0%; background: #ff6b35;"></div></div>
+              </div>
+              <div class="membership-item">
+                <div class="label">Normal</div>
+                <div class="value" id="normal-value">1.00</div>
+                <div class="bar"><div class="bar-fill" id="normal-bar" style="width: 100%; background: #9b5de5;"></div></div>
+              </div>
+              <div class="membership-item">
+                <div class="label">Humid</div>
+                <div class="value" id="humid-value">0.00</div>
+                <div class="bar"><div class="bar-fill" id="humid-bar" style="width: 0%; background: #00bbf9;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="output-display">
+            <div class="output-label">Fan Speed Output</div>
+            <div>
+              <span class="output-value" id="output-value">42</span>
+              <span class="output-unit">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization-section">
+        <div class="card">
+          <h2 class="card-title">
+            <span class="icon purple">📊</span>
+            Membership Functions
+          </h2>
+          <div class="chart-container">
+            <canvas id="membership-chart"></canvas>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-color" style="background: #00f5d4;"></div> Cold</div>
+            <div class="legend-item"><div class="legend-color" style="background: #fee440;"></div> Warm</div>
+            <div class="legend-item"><div class="legend-color" style="background: #f15bb5;"></div> Hot</div>
+            <div class="legend-item"><div class="legend-color" style="background: rgba(255,255,255,0.5);"></div> Current Value</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+          <h2 class="card-title">
+            <span class="icon pink">💻</span>
+            Code Example
+          </h2>
+          <div class="code-block">
+<span class="keyword">import</span> { FuzzyEngine, triangular, trapezoidal } <span class="keyword">from</span> <span class="string">'fuzzy-engine'</span>;
+
+<span class="keyword">const</span> engine = <span class="keyword">new</span> <span class="function">FuzzyEngine</span>();
+
+<span class="comment">// Define temperature variable</span>
+engine.<span class="function">addVariable</span>(<span class="string">'temperature'</span>, {
+  cold: <span class="function">trapezoidal</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">20</span>, <span class="number">40</span>),
+  warm: <span class="function">triangular</span>(<span class="number">30</span>, <span class="number">50</span>, <span class="number">70</span>),
+  hot:  <span class="function">trapezoidal</span>(<span class="number">60</span>, <span class="number">80</span>, <span class="number">100</span>, <span class="number">100</span>)
+});
+
+<span class="comment">// Evaluate</span>
+<span class="keyword">const</span> result = engine.<span class="function">evaluate</span>({ temperature: <span class="number" id="code-temp">25</span> });
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Made with 💜 by <a href="https://github.com/sureshreddy197">Suresh Reddy</a>
+      · <a href="https://github.com/sureshreddy197/fuzzy-engine">View on GitHub</a>
+    </footer>
+  </div>
+
+  <script>
+    // Membership functions
+    const triangular = (a, b, c) => (x) => {
+      if (x <= a || x >= c) return 0;
+      if (x === b) return 1;
+      if (x < b) return (x - a) / (b - a);
+      return (c - x) / (c - b);
+    };
+
+    const trapezoidal = (a, b, c, d) => (x) => {
+      if (x <= a || x >= d) return 0;
+      if (x >= b && x <= c) return 1;
+      if (x < b) return (x - a) / (b - a);
+      return (d - x) / (d - c);
+    };
+
+    // Define fuzzy sets
+    const tempSets = {
+      cold: trapezoidal(0, 0, 20, 40),
+      warm: triangular(30, 50, 70),
+      hot: trapezoidal(60, 80, 100, 100)
+    };
+
+    const humiditySets = {
+      dry: trapezoidal(0, 0, 25, 45),
+      normal: triangular(35, 50, 65),
+      humid: trapezoidal(55, 75, 100, 100)
+    };
+
+    const fanSpeedSets = {
+      low: triangular(0, 25, 50),
+      medium: triangular(30, 50, 70),
+      high: triangular(50, 75, 100)
+    };
+
+    // Simple fuzzy inference
+    function evaluate(temp, humidity) {
+      const coldMu = tempSets.cold(temp);
+      const warmMu = tempSets.warm(temp);
+      const hotMu = tempSets.hot(temp);
+      
+      const dryMu = humiditySets.dry(humidity);
+      const normalMu = humiditySets.normal(humidity);
+      const humidMu = humiditySets.humid(humidity);
+      
+      // Rules
+      const lowStrength = Math.max(coldMu, Math.min(warmMu, dryMu));
+      const mediumStrength = Math.max(Math.min(warmMu, normalMu), Math.min(coldMu, humidMu));
+      const highStrength = Math.max(hotMu, humidMu);
+      
+      // Centroid defuzzification (simplified)
+      const sumWeighted = lowStrength * 25 + mediumStrength * 50 + highStrength * 75;
+      const sumMu = lowStrength + mediumStrength + highStrength;
+      
+      return sumMu > 0 ? sumWeighted / sumMu : 50;
+    }
+
+    // Canvas drawing
+    const canvas = document.getElementById('membership-chart');
+    const ctx = canvas.getContext('2d');
+    let currentTemp = 25;
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+    }
+
+    function drawChart() {
+      const width = canvas.width / window.devicePixelRatio;
+      const height = canvas.height / window.devicePixelRatio;
+      const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+      const chartWidth = width - padding.left - padding.right;
+      const chartHeight = height - padding.top - padding.bottom;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw axes
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 1;
+      
+      // X axis
+      ctx.beginPath();
+      ctx.moveTo(padding.left, height - padding.bottom);
+      ctx.lineTo(width - padding.right, height - padding.bottom);
+      ctx.stroke();
+      
+      // Y axis
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top);
+      ctx.lineTo(padding.left, height - padding.bottom);
+      ctx.stroke();
+
+      // Draw grid lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (chartHeight * i / 4);
+        ctx.beginPath();
+        ctx.moveTo(padding.left, y);
+        ctx.lineTo(width - padding.right, y);
+        ctx.stroke();
+      }
+
+      // Draw membership functions
+      const colors = ['#00f5d4', '#fee440', '#f15bb5'];
+      const funcs = [tempSets.cold, tempSets.warm, tempSets.hot];
+
+      funcs.forEach((fn, idx) => {
+        ctx.beginPath();
+        ctx.strokeStyle = colors[idx];
+        ctx.lineWidth = 2;
+        
+        for (let x = 0; x <= 100; x++) {
+          const screenX = padding.left + (x / 100) * chartWidth;
+          const screenY = height - padding.bottom - fn(x) * chartHeight;
+          
+          if (x === 0) {
+            ctx.moveTo(screenX, screenY);
+          } else {
+            ctx.lineTo(screenX, screenY);
+          }
+        }
+        ctx.stroke();
+      });
+
+      // Draw current value line
+      const currentX = padding.left + (currentTemp / 100) * chartWidth;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(currentX, padding.top);
+      ctx.lineTo(currentX, height - padding.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw labels
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '12px Space Grotesk';
+      ctx.textAlign = 'center';
+      
+      for (let i = 0; i <= 10; i++) {
+        const x = padding.left + (i / 10) * chartWidth;
+        ctx.fillText(i * 10, x, height - padding.bottom + 20);
+      }
+
+      ctx.textAlign = 'right';
+      ctx.fillText('1.0', padding.left - 10, padding.top + 5);
+      ctx.fillText('0.5', padding.left - 10, padding.top + chartHeight / 2 + 5);
+      ctx.fillText('0.0', padding.left - 10, height - padding.bottom + 5);
+    }
+
+    // Update UI
+    function updateUI() {
+      const temp = parseInt(document.getElementById('temperature').value);
+      const humidity = parseInt(document.getElementById('humidity').value);
+      currentTemp = temp;
+
+      // Update temperature display
+      document.getElementById('temp-value').textContent = temp + '°C';
+      document.getElementById('temp-fill').style.width = temp + '%';
+      
+      const coldMu = tempSets.cold(temp);
+      const warmMu = tempSets.warm(temp);
+      const hotMu = tempSets.hot(temp);
+      
+      document.getElementById('cold-value').textContent = coldMu.toFixed(2);
+      document.getElementById('cold-bar').style.width = (coldMu * 100) + '%';
+      document.getElementById('warm-value').textContent = warmMu.toFixed(2);
+      document.getElementById('warm-bar').style.width = (warmMu * 100) + '%';
+      document.getElementById('hot-value').textContent = hotMu.toFixed(2);
+      document.getElementById('hot-bar').style.width = (hotMu * 100) + '%';
+
+      // Update humidity display
+      document.getElementById('humidity-value').textContent = humidity + '%';
+      document.getElementById('humidity-fill').style.width = humidity + '%';
+      
+      const dryMu = humiditySets.dry(humidity);
+      const normalMu = humiditySets.normal(humidity);
+      const humidMu = humiditySets.humid(humidity);
+      
+      document.getElementById('dry-value').textContent = dryMu.toFixed(2);
+      document.getElementById('dry-bar').style.width = (dryMu * 100) + '%';
+      document.getElementById('normal-value').textContent = normalMu.toFixed(2);
+      document.getElementById('normal-bar').style.width = (normalMu * 100) + '%';
+      document.getElementById('humid-value').textContent = humidMu.toFixed(2);
+      document.getElementById('humid-bar').style.width = (humidMu * 100) + '%';
+
+      // Update output
+      const output = evaluate(temp, humidity);
+      document.getElementById('output-value').textContent = Math.round(output);
+
+      // Update code
+      document.getElementById('code-temp').textContent = temp;
+
+      // Redraw chart
+      drawChart();
+    }
+
+    // Event listeners
+    document.getElementById('temperature').addEventListener('input', updateUI);
+    document.getElementById('humidity').addEventListener('input', updateUI);
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      drawChart();
+    });
+
+    // Initial setup
+    resizeCanvas();
+    updateUI();
+  </script>
+</body>
+</html>
