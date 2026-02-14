@@ -1,0 +1,65 @@
+<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0f"/>
+      <stop offset="100%" style="stop-color:#1a1a25"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00f5d4"/>
+      <stop offset="100%" style="stop-color:#00d4aa"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9b5de5"/>
+      <stop offset="100%" style="stop-color:#7b3fc5"/>
+    </linearGradient>
+    <linearGradient id="pink" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f15bb5"/>
+      <stop offset="100%" style="stop-color:#d13b95"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="600" height="200" fill="url(#bg)"/>
+  
+  <!-- Grid pattern -->
+  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  </pattern>
+  <rect width="600" height="200" fill="url(#grid)"/>
+  
+  <!-- Membership function curves -->
+  <g transform="translate(50, 30)">
+    <!-- Axes -->
+    <line x1="0" y1="120" x2="500" y2="120" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <line x1="0" y1="20" x2="0" y2="120" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    
+    <!-- Triangular (Cold) -->
+    <path d="M 0 20 L 0 120 L 150 120 L 50 20 Z" fill="url(#cyan)" fill-opacity="0.2"/>
+    <polyline points="0,20 0,120 150,120" fill="none" stroke="url(#cyan)" stroke-width="2"/>
+    <line x1="0" y1="120" x2="50" y2="20" stroke="url(#cyan)" stroke-width="2"/>
+    <line x1="50" y1="20" x2="150" y2="120" stroke="url(#cyan)" stroke-width="2"/>
+    
+    <!-- Triangular (Warm) -->
+    <path d="M 100 120 L 250 20 L 400 120 Z" fill="url(#purple)" fill-opacity="0.2"/>
+    <polyline points="100,120 250,20 400,120" fill="none" stroke="url(#purple)" stroke-width="2"/>
+    
+    <!-- Trapezoidal (Hot) -->
+    <path d="M 350 120 L 420 20 L 500 20 L 500 120 Z" fill="url(#pink)" fill-opacity="0.2"/>
+    <polyline points="350,120 420,20 500,20 500,120" fill="none" stroke="url(#pink)" stroke-width="2"/>
+    
+    <!-- Current value indicator -->
+    <line x1="200" y1="15" x2="200" y2="125" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="4,4">
+      <animate attributeName="x1" values="150;350;150" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="150;350;150" dur="8s" repeatCount="indefinite"/>
+    </line>
+    
+    <!-- Labels -->
+    <text x="50" y="145" fill="rgba(255,255,255,0.5)" font-family="sans-serif" font-size="10" text-anchor="middle">Cold</text>
+    <text x="250" y="145" fill="rgba(255,255,255,0.5)" font-family="sans-serif" font-size="10" text-anchor="middle">Warm</text>
+    <text x="450" y="145" fill="rgba(255,255,255,0.5)" font-family="sans-serif" font-size="10" text-anchor="middle">Hot</text>
+  </g>
+  
+  <!-- Decorative elements -->
+  <circle cx="580" cy="20" r="40" fill="url(#cyan)" fill-opacity="0.1"/>
+  <circle cx="20" cy="180" r="30" fill="url(#purple)" fill-opacity="0.1"/>
+</svg>
