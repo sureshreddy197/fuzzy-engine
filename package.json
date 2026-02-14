@@ -1,0 +1,83 @@
+{
+  "name": "fuzzy-engine",
+  "version": "1.0.0",
+  "description": "A modern fuzzy logic library for JavaScript & TypeScript - elegant fuzzy inference for intelligent decision-making systems",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./hedges": {
+      "import": "./dist/hedges.mjs",
+      "require": "./dist/hedges.js",
+      "types": "./dist/hedges.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/hedges.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format esm --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "benchmark": "tsx benchmarks/index.ts",
+    "prepublishOnly": "npm run build",
+    "docs": "typedoc --out docs src/index.ts"
+  },
+  "keywords": [
+    "fuzzy",
+    "fuzzy-logic",
+    "fuzzy-set",
+    "fuzzy-inference",
+    "mamdani",
+    "membership-function",
+    "defuzzification",
+    "ai",
+    "decision-making",
+    "control-systems",
+    "typescript",
+    "javascript"
+  ],
+  "author": {
+    "name": "Suresh Reddy",
+    "url": "https://github.com/sureshreddy197"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sureshreddy197/fuzzy-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sureshreddy197/fuzzy-engine/issues"
+  },
+  "homepage": "https://github.com/sureshreddy197/fuzzy-engine#readme",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.6.0",
+    "typedoc": "^0.25.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "sideEffects": false
+}
